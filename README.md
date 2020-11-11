@@ -1,12 +1,12 @@
-# bayesian optimization from Scratch
+# Bayesian Optimization from Scratch
 
-This python script illustrates how to implement Bayesian Optimization from Scratch in Python.
+This python script illustrates how to implement bayesian optimization from scratch in Python.
 Please refer to https://distill.pub/2020/bayesian-optimization for details
 
-## bayesian optimization simulation
+## Bayesian Optimization Simulation
 ![bayesian_optimization_process](./bayesian_optimization_process.png)
 
-## Python Console output
+## Python Console Output
 
 ```
 [iter=0] Query_x=7.146, Predicted_f=4.55, Ground_Truth_f=5.427
