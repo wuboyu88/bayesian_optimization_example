@@ -17,9 +17,9 @@ Please refer to https://distill.pub/2020/bayesian-optimization for details
 ```
 
 ## Contributing
-I have implemented 1D objective function optimization using gaussian process as the surrogate model
-and probability of improvement as the acquisition function. Actually, there are a wide variety of options for
-acquisition functions. 
+I have implemented 1D objective function optimization using gaussian process as the surrogate model,
+probability of improvement(PI) and upper confidence bound(UCB) as the acquisition function. Actually, 
+there are a wide variety of options for acquisition functions. 
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 

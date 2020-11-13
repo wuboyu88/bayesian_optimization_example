@@ -45,9 +45,9 @@ def surrogate(model, x):
         return model.predict(x, return_std=True)
 
 
-def acquisition(x_labeled, y_labeled, x_bounds, model, axs, n_iter, nb_axs, epsilon=0):
+def acquisition(x_labeled, y_labeled, x_bounds, model, axs, n_iter, nb_axs, method='PI', epsilon=0, alpha=1):
     """
-    采集函数(probability of improvement)
+    采集函数
     :param x_labeled: 训练集对应的x
     :param y_labeled: 训练集对应的y
     :param x_bounds: 待调的参数范围
@@ -55,7 +55,9 @@ def acquisition(x_labeled, y_labeled, x_bounds, model, axs, n_iter, nb_axs, epsi
     :param axs: subplot对应的axs
     :param n_iter: 迭代的次数
     :param nb_axs: 第nb_axs张图片
+    :param method: 'PI' (probability of improvement) or 'UCB' (upper confidence bound)
     :param epsilon: 提升的幅度
+    :param alpha: trade off between exploration and exploitation
     :return acquisition_score: 采集函数的分数
     """
     # 画出训练集对应的点
@@ -72,7 +74,13 @@ def acquisition(x_labeled, y_labeled, x_bounds, model, axs, n_iter, nb_axs, epsi
     mu = mu[:, 0]
 
     # 计算采集函数的值
-    acquisition_score = norm.cdf((mu - best - epsilon) / (std + 1E-9))
+    if method == 'PI':
+        acquisition_score = norm.cdf((mu - best - epsilon) / (std + 1E-9))
+    elif method == 'UCB':
+        acquisition_score = mu + alpha * std
+    else:
+        print('You have to choose an implemented acquisition method!')
+        return
 
     x_sorted, y_sorted = sort_two_arrays_together(x_bounds, acquisition_score)
     axs[nb_axs].plot(x_sorted, y_sorted, 'green')
@@ -85,7 +93,7 @@ def acquisition(x_labeled, y_labeled, x_bounds, model, axs, n_iter, nb_axs, epsi
     return acquisition_score
 
 
-def opt_acquisition(x_labeled, y_labeled, model, x_bounds, axs, nb_iter, nb_axs):
+def opt_acquisition(x_labeled, y_labeled, model, x_bounds, axs, nb_iter, nb_axs, method='PI', epsilon=0, alpha=1):
     """
     得到采集函数达到最大值对应的点
     :param x_labeled: 训练集对应的x
@@ -95,10 +103,13 @@ def opt_acquisition(x_labeled, y_labeled, model, x_bounds, axs, nb_iter, nb_axs)
     :param axs: subplot对应的axs
     :param nb_iter: 迭代的次数
     :param nb_axs: 第nb_axs张图片
+    :param method: 'PI' (probability of improvement) or 'UCB' (upper confidence bound)
+    :param epsilon: 提升的幅度
+    :param alpha: trade off between exploration and exploitation
     :return query_x: 采集函数达到最大值对应的点
     """
     # 计算每个采集点对应的采集函数值
-    acquisition_score = acquisition(x_labeled, y_labeled, x_bounds, model, axs, nb_iter, nb_axs)
+    acquisition_score = acquisition(x_labeled, y_labeled, x_bounds, model, axs, nb_iter, nb_axs, method, epsilon, alpha)
 
     # 得到采集函数达到最大值对应的点作为下一个待挖掘的点
     query_x = x_bounds[np.argmax(acquisition_score), 0]
