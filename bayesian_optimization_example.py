@@ -45,7 +45,7 @@ def surrogate(model, x):
         return model.predict(x, return_std=True)
 
 
-def acquisition(x_labeled, y_labeled, x_bounds, model, axs, n_iter, nb_axs, method='PI', epsilon=0, alpha=1):
+def acquisition(x_labeled, y_labeled, x_bounds, model, axs, n_iter, nb_axs, method='UCB', epsilon=0, alpha=1):
     """
     采集函数
     :param x_labeled: 训练集对应的x
@@ -93,7 +93,7 @@ def acquisition(x_labeled, y_labeled, x_bounds, model, axs, n_iter, nb_axs, meth
     return acquisition_score
 
 
-def opt_acquisition(x_labeled, y_labeled, model, x_bounds, axs, nb_iter, nb_axs, method='PI', epsilon=0, alpha=1):
+def opt_acquisition(x_labeled, y_labeled, model, x_bounds, axs, nb_iter, nb_axs, method='UCB', epsilon=0, alpha=1):
     """
     得到采集函数达到最大值对应的点
     :param x_labeled: 训练集对应的x
@@ -196,6 +196,8 @@ def bayesian_optimization_example():
         print('[iter={}] Query_x={}, Predicted_f={}, Ground_Truth_f={}'.format(i, round(query_x, 3),
                                                                                round(predicted_f, 3),
                                                                                round(ground_truth_f, 3)))
+        # 画出每次优化对应的图
+        plot(gp_model, x, y_true, axs, n_iter, nb_axs=i)
 
         # 将该点加入已知的数据集中
         x_labeled = np.vstack((x_labeled, [[query_x]]))
@@ -205,9 +207,6 @@ def bayesian_optimization_example():
 
         # 更新高斯回归模型
         gp_model.fit(x_labeled, y_labeled)
-
-        # 画出每次优化对应的图
-        plot(gp_model, x, y_true, axs, n_iter, nb_axs=i)
 
     fig.suptitle('Bayesian Optimization Process')
     handles, labels = axs[n_iter - 1].get_legend_handles_labels()
